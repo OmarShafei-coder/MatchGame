@@ -20,6 +20,8 @@ namespace MatchGame
     /// </summary>
     public partial class MainWindow : Window
     {
+        bool IsFirstClick = true;
+        TextBlock lastTextBlockClicked;
         public MainWindow()
         {
             InitializeComponent();
@@ -40,13 +42,48 @@ namespace MatchGame
                 "🦒", "🦒",
                 "🐘", "🐘",
             };
-            foreach(TextBlock textBlock in MainGrid.Children.OfType<TextBlock>())
+
+            foreach (TextBlock textBlock in MainGrid.Children.OfType<TextBlock>())
             {
                 int Index = random.Next(AnimalEmojis.Count);
                 string NextEmoji = AnimalEmojis[Index];
                 textBlock.Text = NextEmoji;
                 AnimalEmojis.RemoveAt(Index);
             }
+        }
+
+        /* If it's the first in the
+         * pair being clicked, keep
+         * track of which TextBlock
+         * was clicked and make the
+         * animal disappear. If
+         * it's the second one,
+         * either make it disappear
+         * (if it's a match) or
+         * bring back the first one
+         * (if it's not).
+         */
+        private void TextBlock_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            TextBlock textBlock = sender as TextBlock;
+            if(IsFirstClick)
+            {
+                textBlock.Visibility = Visibility.Hidden;
+                IsFirstClick = false;
+            }
+            else
+            {
+                if(lastTextBlockClicked.Text == textBlock.Text)
+                {
+                    textBlock.Visibility = Visibility.Hidden;
+                }
+                else
+                {
+                    lastTextBlockClicked.Visibility = Visibility.Visible;
+                }
+                IsFirstClick = true;
+            }
+            lastTextBlockClicked = textBlock;
         }
     }
 }
